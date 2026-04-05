@@ -12,6 +12,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.21.0",
-    "simple-git": "^3.27.0"
+    "mammoth": "^1.8.0",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "simple-git": "^3.27.0",
+    "xlsx": "^0.18.5"
   }
 }

@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '../db/supabase.js';
 import { assembleAgentContext } from '../vault/reader.js';
 import { buildAgentPrompt, AGENTS } from '../agents/prompts.js';
+import { getToolContextForAgent } from '../tools/index.js';
 
 const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -16,7 +17,7 @@ router.post('/:agentId', async (req, res) => {
     return res.status(400).json({ error: `Unknown agent: ${agentId}` });
   }
 
-  const { message, conversationId } = req.body;
+  const { message, conversationId, fileContext } = req.body;
 
   if (!message?.trim()) {
     return res.status(400).json({ error: 'message is required' });
@@ -41,15 +42,14 @@ router.post('/:agentId', async (req, res) => {
     .eq('conversation_id', convId)
     .order('created_at', { ascending: true });
 
-  // Load vault context + CEO brief
-  const vaultContext = assembleAgentContext();
-  const { data: briefData } = await supabase
-    .from('ceo_brief')
-    .select('content')
-    .eq('id', 1)
-    .single();
+  // Load vault context, CEO brief, and live tool data in parallel
+  const [vaultContext, briefData, toolContext] = await Promise.all([
+    Promise.resolve(assembleAgentContext()),
+    supabase.from('ceo_brief').select('content').eq('id', 1).single(),
+    getToolContextForAgent(agentId),
+  ]);
 
-  const systemPrompt = buildAgentPrompt(agentId, vaultContext, briefData?.content);
+  const systemPrompt = buildAgentPrompt(agentId, vaultContext, briefData?.data?.content, toolContext);
 
   // Persist user message
   await supabase.from('messages').insert({
@@ -76,7 +76,7 @@ router.post('/:agentId', async (req, res) => {
       system: systemPrompt,
       messages: [
         ...(history || []).map(m => ({ role: m.role, content: m.content })),
-        { role: 'user', content: message },
+        { role: 'user', content: fileContext ? `${message}\n\n---\n**Attached files:**\n${fileContext}` : message },
       ],
     });
 

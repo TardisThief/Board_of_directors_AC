@@ -68,7 +68,7 @@ function stalenessWarning(staleness) {
   return `\n\n⚠️ STALENESS ALERT: The domain state file (ac-styling/_state.md) was last updated ${staleness.daysSince} days ago. Proactively flag to the user that some context may be outdated and suggest they update the vault.`;
 }
 
-export function buildAgentPrompt(agentId, vaultContext, ceoBrief) {
+export function buildAgentPrompt(agentId, vaultContext, ceoBrief, toolContext = null) {
   const agent = AGENTS[agentId];
   if (!agent) throw new Error(`Unknown agent: ${agentId}`);
 
@@ -109,6 +109,7 @@ ${stalenessWarning(staleness)}
 ${ceoBrief ? `\n## CEO Brief (current priorities)\n${ceoBrief}` : ''}
 
 ---
+${toolContext ? `## Live Tool Data\n${toolContext}\n\n---` : ''}
 Today you are speaking directly with Manuel, the CEO. Be his trusted advisor. Be honest, be sharp, be useful.`;
 }
 

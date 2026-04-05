@@ -6,17 +6,30 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  transition: var(--transition-theme), width 0.2s ease, min-width 0.2s ease;
 }
 
+.sidebar.collapsed {
+  width: 56px;
+  min-width: 56px;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────── */
 .header {
-  padding: 24px 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 18px 18px;
   border-bottom: 1px solid var(--color-border);
 }
 
 .logo {
   display: block;
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   color: var(--color-gold);
   letter-spacing: 0.04em;
@@ -24,20 +37,55 @@
 
 .tagline {
   display: block;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--color-text-muted);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   margin-top: 2px;
 }
 
+.collapseBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  transition: color 0.15s;
+}
+.collapseBtn:hover { color: var(--color-text-secondary); }
+
+/* ─── Collapsed icon buttons ─────────────────────────────────────────────── */
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.iconBtn:hover { background: var(--color-bg-overlay); }
+.iconBtn.active { background: rgba(255,255,255,0.06); }
+
+.boardroomIconSm {
+  font-size: 18px;
+  color: var(--color-gold);
+}
+
+/* ─── Nav ────────────────────────────────────────────────────────────────── */
 .nav {
   flex: 1;
-  padding: 16px 0;
+  padding: 14px 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .navLabel {
@@ -45,21 +93,21 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  padding: 0 20px 8px;
+  padding: 0 18px 6px;
+  display: block;
 }
 
 .agentBtn,
 .boardroomBtn {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 20px;
+  gap: 10px;
+  padding: 7px 18px;
   background: none;
   border: none;
   cursor: pointer;
   width: 100%;
   text-align: left;
-  border-radius: 0;
   transition: background 0.15s;
   color: var(--color-text-secondary);
 }
@@ -76,35 +124,40 @@
   color: var(--color-text-primary);
 }
 
-/* Agent avatars */
+[data-theme="light"] .agentBtn.active,
+[data-theme="light"] .boardroomBtn.active {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* ─── Avatars ────────────────────────────────────────────────────────────── */
 .avatar {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 500;
   flex-shrink: 0;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
-.avatar[data-agent="coo"] { background: rgba(155, 127, 182, 0.2); color: var(--color-coo); }
-.avatar[data-agent="cmo"] { background: rgba(181, 115, 138, 0.2); color: var(--color-cmo); }
-.avatar[data-agent="cso"] { background: rgba(122, 158, 135, 0.2); color: var(--color-cso); }
-.avatar[data-agent="cfo"] { background: rgba(201, 168, 76, 0.2); color: var(--color-cfo); }
-.avatar[data-agent="cto"] { background: rgba(107, 140, 174, 0.2); color: var(--color-cto); }
+.avatar[data-agent="coo"] { background: rgba(155, 127, 182, 0.18); color: var(--color-coo); }
+.avatar[data-agent="cmo"] { background: rgba(181, 115, 138, 0.18); color: var(--color-cmo); }
+.avatar[data-agent="cso"] { background: rgba(122, 158, 135, 0.18); color: var(--color-cso); }
+.avatar[data-agent="cfo"] { background: rgba(201, 168, 76, 0.18); color: var(--color-cfo); }
+.avatar[data-agent="cto"] { background: rgba(107, 140, 174, 0.18); color: var(--color-cto); }
 
 .boardroomIcon {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  flex-shrink: 0;
   color: var(--color-gold);
+  flex-shrink: 0;
 }
 
 .agentInfo {
@@ -115,7 +168,6 @@
 }
 
 .agentName {
-  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
@@ -139,30 +191,149 @@
 .divider {
   height: 1px;
   background: var(--color-border);
-  margin: 8px 20px;
+  margin: 6px 18px;
 }
 
+/* ─── Command Center ─────────────────────────────────────────────────────── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 18px 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+.chevron {
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+
+.commandCenter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 10px 8px;
+}
+
+.toolCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.toolCard:hover {
+  background: var(--color-bg-overlay);
+  color: var(--color-text-primary);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.statusDot.online { background: var(--color-online); }
+.statusDot.offline { background: var(--color-offline); }
+
+.toolInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+
+.toolName {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toolMetric {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toolArrow {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.refreshBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-align: left;
+  transition: color 0.15s;
+}
+
+.refreshBtn:hover { color: var(--color-text-secondary); }
+
+/* ─── Footer ─────────────────────────────────────────────────────────────── */
 .footer {
-  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
   border-top: 1px solid var(--color-border);
 }
 
 .briefBtn {
-  width: 100%;
-  padding: 8px 12px;
+  flex: 1;
+  padding: 7px 10px;
   background: var(--color-gold-dim);
-  border: 1px solid rgba(201, 168, 76, 0.25);
+  border: 1px solid var(--color-gold-border);
   border-radius: var(--radius);
   color: var(--color-gold);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s;
 }
 
 .briefBtn:hover {
   background: rgba(201, 168, 76, 0.22);
-  border-color: rgba(201, 168, 76, 0.4);
+}
+
+.themeBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-overlay);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.themeBtn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-border-strong);
 }

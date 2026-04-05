@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar/Sidebar.jsx';
 import Chat from './components/Chat/Chat.jsx';
 import Boardroom from './components/Boardroom/Boardroom.jsx';
@@ -8,8 +8,17 @@ import styles from './App.module.css';
 export default function App() {
   const [activeAgent, setActiveAgent] = useState('coo');
   const [briefOpen, setBriefOpen] = useState(false);
-  // conversationId per agent/boardroom, persisted in state
   const [conversations, setConversations] = useState({});
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  function toggleTheme() {
+    setTheme(t => (t === 'dark' ? 'light' : 'dark'));
+  }
 
   function setConversationId(agentId, id) {
     setConversations(prev => ({ ...prev, [agentId]: id }));
@@ -21,6 +30,8 @@ export default function App() {
         activeAgent={activeAgent}
         onSelectAgent={setActiveAgent}
         onOpenBrief={() => setBriefOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       <main className={styles.main}>
