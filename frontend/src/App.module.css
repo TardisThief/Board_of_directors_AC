@@ -10,4 +10,5 @@
   flex-direction: column;
   overflow: hidden;
   background: var(--color-bg);
+  transition: var(--transition-theme);
 }

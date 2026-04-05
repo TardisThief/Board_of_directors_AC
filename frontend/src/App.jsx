@@ -1,14 +1,24 @@
 import { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar/Sidebar.jsx';
-import Chat from './components/Chat/Chat.jsx';
-import Boardroom from './components/Boardroom/Boardroom.jsx';
-import CEOBrief from './components/CEOBrief/CEOBrief.jsx';
+import Nav from './components/Nav/Nav.jsx';
+import Command from './components/modules/Command/Command.jsx';
+import Finance from './components/modules/Finance/Finance.jsx';
+import Content from './components/modules/Content/Content.jsx';
+import LeadsPipeline from './components/modules/Leads/LeadsPipeline.jsx';
+import Operations from './components/modules/Operations/Operations.jsx';
+import ToolsStatus from './components/modules/Tools/ToolsStatus.jsx';
 import styles from './App.module.css';
 
+export const MODULES = [
+  { id: 'command',    label: 'Command',             icon: '◈', shortcut: '1' },
+  { id: 'finance',    label: 'Financial Management', icon: '₊', shortcut: '2' },
+  { id: 'content',    label: 'Marketing & Content',  icon: '◐', shortcut: '3' },
+  { id: 'leads',      label: 'Sales & Leads',        icon: '⟢', shortcut: '4' },
+  { id: 'operations', label: 'Operations',           icon: '◫', shortcut: '5' },
+  { id: 'tools',      label: 'Tools & Tech',         icon: '⚙', shortcut: '6' },
+];
+
 export default function App() {
-  const [activeAgent, setActiveAgent] = useState('coo');
-  const [briefOpen, setBriefOpen] = useState(false);
-  const [conversations, setConversations] = useState({});
+  const [activeModule, setActiveModule] = useState('command');
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
 
   useEffect(() => {
@@ -16,40 +26,33 @@ export default function App() {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
-  function toggleTheme() {
-    setTheme(t => (t === 'dark' ? 'light' : 'dark'));
-  }
-
-  function setConversationId(agentId, id) {
-    setConversations(prev => ({ ...prev, [agentId]: id }));
-  }
+  // Keyboard shortcuts 1-6
+  useEffect(() => {
+    function onKey(e) {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      const mod = MODULES.find(m => m.shortcut === e.key);
+      if (mod) setActiveModule(mod.id);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   return (
     <div className={styles.layout}>
-      <Sidebar
-        activeAgent={activeAgent}
-        onSelectAgent={setActiveAgent}
-        onOpenBrief={() => setBriefOpen(true)}
+      <Nav
+        activeModule={activeModule}
+        onSelect={setActiveModule}
         theme={theme}
-        onToggleTheme={toggleTheme}
+        onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
       />
-
       <main className={styles.main}>
-        {activeAgent === 'boardroom' ? (
-          <Boardroom
-            conversationId={conversations['boardroom']}
-            onConversationId={id => setConversationId('boardroom', id)}
-          />
-        ) : (
-          <Chat
-            agentId={activeAgent}
-            conversationId={conversations[activeAgent]}
-            onConversationId={id => setConversationId(activeAgent, id)}
-          />
-        )}
+        {activeModule === 'command'    && <Command />}
+        {activeModule === 'finance'    && <Finance />}
+        {activeModule === 'content'    && <Content />}
+        {activeModule === 'leads'      && <LeadsPipeline />}
+        {activeModule === 'operations' && <Operations />}
+        {activeModule === 'tools'      && <ToolsStatus />}
       </main>
-
-      {briefOpen && <CEOBrief onClose={() => setBriefOpen(false)} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 {
   "name": "board-backend",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
@@ -14,8 +14,12 @@
     "express": "^4.21.0",
     "mammoth": "^1.8.0",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
+    "openai": "^4.0.0",
     "pdf-parse": "^1.1.1",
+    "puppeteer": "^22.0.0",
     "simple-git": "^3.27.0",
+    "voyageai": "^0.0.5",
     "xlsx": "^0.18.5"
   }
 }

@@ -1,0 +1,89 @@
+.container { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+
+.kpiRow {
+  display: flex; gap: 1px; background: var(--color-border);
+  border-bottom: 1px solid var(--color-border); flex-shrink: 0;
+}
+.kpiRow > * { flex: 1; border-radius: 0; border: none; border-top: 2px solid transparent; min-width: 120px; }
+
+.tabs {
+  display: flex; gap: 0; border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-elevated); flex-shrink: 0; padding: 0 24px;
+}
+.tab {
+  padding: 10px 16px; background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--color-text-muted); font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.06em; cursor: pointer; transition: color 0.15s; margin-bottom: -1px;
+}
+.tab:hover { color: var(--color-text-secondary); }
+.activeTab { color: var(--color-text-primary); border-bottom-color: var(--color-gold); }
+
+.tableWrap { flex: 1; overflow: auto; }
+
+.loading { padding: 40px; text-align: center; color: var(--color-text-muted); font-size: 12px; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.table thead th {
+  padding: 10px 16px; text-align: left; font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--color-text-muted); font-weight: 500;
+  border-bottom: 1px solid var(--color-border); white-space: nowrap;
+  background: var(--color-bg-elevated); position: sticky; top: 0;
+}
+.table tbody td { padding: 10px 16px; border-bottom: 1px solid var(--color-border); }
+.table tbody tr:hover { background: var(--color-bg-elevated); }
+
+.right { text-align: right; }
+.mono { font-family: var(--font-mono); }
+.muted { color: var(--color-text-muted); }
+.desc { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.positive { color: var(--color-cso); font-weight: 500; }
+.negative { color: var(--color-error); font-weight: 500; }
+
+.deleteBtn {
+  background: none; border: none; color: var(--color-text-muted);
+  cursor: pointer; font-size: 10px; padding: 3px 6px; border-radius: var(--radius-sm);
+  transition: color 0.15s;
+}
+.deleteBtn:hover { color: var(--color-error); }
+
+/* Modal */
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center; z-index: 100;
+  backdrop-filter: blur(2px);
+}
+.form {
+  width: 520px; max-width: calc(100vw - 48px);
+  background: var(--color-bg-elevated); border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius); overflow: hidden;
+}
+.formHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-display); font-size: 16px; font-weight: 500;
+}
+.formHeader button { background: none; border: none; color: var(--color-text-muted); cursor: pointer; }
+.formGrid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 20px;
+}
+.full { grid-column: 1 / -1; }
+.formGrid label { display: flex; flex-direction: column; gap: 5px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-muted); }
+.formGrid input, .formGrid select, .formGrid textarea {
+  background: var(--color-bg-overlay); border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); color: var(--color-text-primary);
+  font-family: var(--font-mono); font-size: 12px; padding: 8px 10px; outline: none;
+  transition: border-color 0.15s;
+}
+.formGrid input:focus, .formGrid select:focus { border-color: var(--color-border-strong); }
+.formFooter { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--color-border); }
+
+/* Receipt scanner */
+.scanArea { padding: 32px 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.scanBtn {
+  padding: 12px 24px; background: var(--color-gold-dim); border: 1px solid var(--color-gold-border);
+  border-radius: var(--radius); color: var(--color-gold); font-family: var(--font-mono);
+  font-size: 12px; cursor: pointer; transition: background 0.15s;
+}
+.scanBtn:hover { background: rgba(201,168,76,0.22); }
+.scanBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.scanHint { font-size: 11px; color: var(--color-text-muted); text-align: center; }
