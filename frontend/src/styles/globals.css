@@ -1,0 +1,74 @@
+/* Design Tokens */
+:root {
+  --color-bg: #1c1c1e;
+  --color-bg-elevated: #242426;
+  --color-bg-overlay: #2c2c2e;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.15);
+
+  --color-text-primary: #f5f5f0;
+  --color-text-secondary: rgba(245, 245, 240, 0.6);
+  --color-text-muted: rgba(245, 245, 240, 0.35);
+
+  --color-gold: #c9a84c;
+  --color-gold-dim: rgba(201, 168, 76, 0.15);
+
+  /* Agent colors */
+  --color-coo: #9b7fb6;
+  --color-cmo: #b5738a;
+  --color-cso: #7a9e87;
+  --color-cfo: #c9a84c;
+  --color-cto: #6b8cae;
+  --color-boardroom: #c9a84c;
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'DM Mono', 'Courier New', monospace;
+
+  /* Spacing */
+  --sidebar-width: 240px;
+  --radius: 6px;
+  --radius-sm: 3px;
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 2px;
+}
+
+/* Utility */
+.agent-color-coo { color: var(--color-coo); }
+.agent-color-cmo { color: var(--color-cmo); }
+.agent-color-cso { color: var(--color-cso); }
+.agent-color-cfo { color: var(--color-cfo); }
+.agent-color-cto { color: var(--color-cto); }
+.agent-color-boardroom { color: var(--color-boardroom); }
