@@ -14,8 +14,9 @@ import contentRouter from './routes/modules/content.js';
 import leadsRouter from './routes/modules/leads.js';
 import operationsRouter from './routes/modules/operations.js';
 
-// Background jobs
-import { runScout } from './services/leadAgents.js';
+// Lead pipeline
+import { runScout } from './services/agents/scout.js';
+import { startOrchestrator } from './services/orchestrator.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -99,4 +100,6 @@ cron.schedule('0 */4 * * *', async () => {
 app.listen(PORT, () => {
   console.log(`AC Styling Command Center backend v2.0 — http://localhost:${PORT}`);
   console.log(`Lead scout scheduled every 4 hours`);
+  // Start the lead pipeline orchestrator (polls every 15s)
+  startOrchestrator();
 });

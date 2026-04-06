@@ -1,0 +1,32 @@
+[
+  {
+    "id": "realtor_solo_launch",
+    "context": "Realtor leaving a large firm to open her own boutique brokerage. Trigger: new brokerage website went live.",
+    "lead_type": "REALTOR",
+    "trigger_type": "BRAND_LAUNCH",
+    "subject": "Your new chapter — and how it looks",
+    "body": "Congratulations on Meridian Realty. Going independent after eight years at Compass takes real conviction.\n\nI work with principals in the luxury market on the visual side of that transition — the headshots, the listing-day wardrobe, the way your image now needs to carry the weight of the firm name rather than borrow it.\n\nYour current photos are strong, but they read Compass-era. The palette, the setting, even the posture — they're associate photos, not principal ones. That's a small but telling gap when clients are deciding whether to list with the brand or the person behind it.\n\nI'd love to show you what a fresh visual identity could look like for Meridian. A short conversation, no commitment.\n\nWarmly,\nAlejandra",
+    "tone_notes": "Opens with the specific trigger. Acknowledges the bravery of the decision before pivoting. The gap is named precisely — 'associate photos, not principal ones' — without being critical. One soft CTA at the end.",
+    "word_count": 131
+  },
+  {
+    "id": "executive_promotion",
+    "context": "Chief Marketing Officer promoted to President of a luxury hospitality brand. Trigger: LinkedIn announcement.",
+    "lead_type": "EXECUTIVE",
+    "trigger_type": "PROMOTION",
+    "subject": "From CMO to President — the wardrobe shift that follows",
+    "body": "I saw the announcement — congratulations on the presidency at Auberge.\n\nThe leap from CMO to President is a genuine identity shift, not just a title change. The brand storytelling role you've held for the last four years was about making others look exceptional. Now the room needs to read you as the principal.\n\nFrom what I can see in your recent press photos, your aesthetic is refined but still leans into the creative-director register — dark, editorial, a little removed. That's a beautiful look, and it may need just a degree of recalibration to also read as the executive presence the new role requires.\n\nI specialize in exactly this transition for senior leaders in the luxury and hospitality space. I'd love to share a few thoughts.\n\nBest,\nAlejandra",
+    "tone_notes": "The gap is framed as a 'recalibration', not a problem. Acknowledges the quality of what's there before noting the mismatch. Specific to hospitality context. No ask for a meeting — just 'share a few thoughts'.",
+    "word_count": 154
+  },
+  {
+    "id": "speaker_conference",
+    "context": "Real estate attorney announced as keynote speaker at a luxury property conference. Trigger: conference website speaker listing.",
+    "lead_type": "SPEAKER",
+    "trigger_type": "SPEAKER_ANNOUNCED",
+    "subject": "UHNW Forum keynote — the stage is a different audience",
+    "body": "I noticed you're opening the UHNW Property Forum in March — that's a meaningful platform, and a room with very particular expectations.\n\nI work with speakers on the visual dimension of high-stakes stages: what reads well under conference lighting, what signals authority without distance, and how a wardrobe edit can do quiet work before you say a word.\n\nYour headshots are professional, but they're board-room register — excellent for a deposition, slightly underweight for a keynote where the audience includes the principals you're advising. It's a fine distinction, but in that room it matters.\n\nIf the visual side of the keynote is on your list, I'd be glad to be useful.\n\nWarmly,\nAlejandra",
+    "tone_notes": "Lead with the specific event and date. Frame the styling as 'the visual dimension' — sophisticated framing. The gap is precise: board-room vs keynote register. Closing is low-pressure and service-oriented.",
+    "word_count": 138
+  }
+]

@@ -90,3 +90,56 @@
   cursor: pointer; font-size: 9px;
 }
 .deleteBtn:hover { color: var(--color-error); }
+
+/* Proposal asset slots */
+.slotRow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.slot { flex-shrink: 0; width: 120px; display: flex; flex-direction: column; gap: 4px; }
+.slotImg { width: 120px; height: 90px; object-fit: cover; border-radius: 4px; border: 1px solid var(--color-border); }
+.slotEmpty {
+  width: 120px; height: 90px; border-radius: 4px; border: 1px dashed var(--color-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--color-text-muted);
+}
+.slotMeta { display: flex; align-items: center; justify-content: space-between; }
+.slotLabel { font-size: 9px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.swapBtn {
+  background: none; border: 1px solid var(--color-border); border-radius: 3px;
+  color: var(--color-text-muted); font-size: 10px; cursor: pointer; padding: 1px 4px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.swapBtn:hover { color: var(--color-text-primary); border-color: var(--color-border-strong); }
+.swapBtn:disabled { opacity: 0.5; cursor: default; }
+
+/* Caption variants */
+.captionVariants { display: flex; flex-direction: column; gap: 6px; }
+.captionOption {
+  text-align: left; padding: 8px 10px; border-radius: 4px;
+  border: 1px solid var(--color-border); background: var(--color-bg);
+  font-size: 11px; line-height: 1.5; color: var(--color-text-secondary);
+  cursor: pointer; transition: border-color 0.15s;
+}
+.captionOption:hover { border-color: var(--color-border-strong); }
+.captionSelected { border-color: var(--color-gold); color: var(--color-text-primary); background: var(--color-bg-overlay); }
+
+/* Brand Voice panel */
+.brandVoice { display: flex; flex-direction: column; gap: 20px; max-width: 700px; }
+.brandVoiceForm { display: flex; flex-direction: column; gap: 14px; }
+.bvField { display: flex; flex-direction: column; gap: 6px; }
+.bvLabel { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted); }
+.bvTextarea {
+  background: var(--color-bg-elevated); border: 1px solid var(--color-border);
+  border-radius: var(--radius); padding: 10px 12px;
+  color: var(--color-text-primary); font-family: var(--font-mono); font-size: 12px;
+  line-height: 1.6; resize: vertical; outline: none;
+}
+.bvTextarea:focus { border-color: var(--color-border-strong); }
+.bvActions { display: flex; gap: 8px; }
+
+.learnedStyle {
+  padding: 14px; background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border); border-radius: var(--radius);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.learnedGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.learnedGrid > div { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
+.learnedKey { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-muted); }

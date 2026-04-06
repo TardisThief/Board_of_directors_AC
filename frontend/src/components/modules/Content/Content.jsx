@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { getAssets, getTrends, getProposals, getSchedule, refreshTrends, generateProposals, createScheduleEntry, updateScheduleEntry, deleteScheduleEntry } from '../../../api/client.js';
+import { getAssets, getTrends, getProposals, getSchedule, refreshTrends, createScheduleEntry,
+  deleteScheduleEntry, updateScheduleEntry, swapProposalAsset, generateProposalCaptions,
+  updateProposalStatus, getBrandVoice, updateBrandVoice, learnBrandVoice } from '../../../api/client.js';
 import { ModuleHeader, Button, Badge, EmptyState } from '../../shared/ModuleLayout.jsx';
 import styles from './Content.module.css';
 
-const TABS = ['vault', 'trends', 'proposals', 'calendar'];
+const TABS = ['vault', 'trends', 'proposals', 'calendar', 'brand voice'];
 
 export default function Content() {
   const [tab, setTab] = useState('vault');
@@ -62,14 +64,20 @@ export default function Content() {
 
   async function handleRefreshTrends() {
     setLoading(true);
-    try { await refreshTrends(); setTrends(await getTrends()); }
-    finally { setLoading(false); }
+    try {
+      const result = await refreshTrends();
+      setTrends(await getTrends());
+      console.log('[Trends] Refresh result:', result);
+    } finally { setLoading(false); }
   }
 
-  async function handleGenerateProposals(trendId) {
+  async function handleGenerateProposals() {
     setLoading(true);
-    try { await generateProposals([trendId], 'b-roll'); setProposals(await getProposals()); setTab('proposals'); }
-    finally { setLoading(false); }
+    try {
+      await fetch('/api/content/proposals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'b-roll', max: 5 }) });
+      setProposals(await getProposals());
+      setTab('proposals');
+    } finally { setLoading(false); }
   }
 
   return (
@@ -85,6 +93,8 @@ export default function Content() {
             </Button>
           ) : tab === 'trends' ? (
             <Button variant="default" size="sm" onClick={handleRefreshTrends} disabled={loading}>↺ Refresh Trends</Button>
+          ) : tab === 'proposals' ? (
+            <Button variant="default" size="sm" onClick={handleGenerateProposals} disabled={loading}>⟳ Generate</Button>
           ) : null
         }
       />
@@ -123,7 +133,7 @@ export default function Content() {
 
         {!loading && tab === 'trends' && (
           trends.length === 0
-            ? <EmptyState icon="◐" title="No active trends" body="Refresh to scrape the latest TikTok and Instagram trends." action={<Button variant="primary" size="md" onClick={handleRefreshTrends}>Refresh Trends</Button>} />
+            ? <EmptyState icon="◐" title="No active trends" body="Refresh to scrape the latest TikTok trends." action={<Button variant="primary" size="md" onClick={handleRefreshTrends}>Refresh Trends</Button>} />
             : (
               <div className={styles.list}>
                 {trends.map(t => (
@@ -138,7 +148,7 @@ export default function Content() {
                     {t.trending_hashtags?.length > 0 && (
                       <p className={styles.hashtags}>{t.trending_hashtags.slice(0, 5).join(' ')}</p>
                     )}
-                    <Button variant="default" size="sm" onClick={() => handleGenerateProposals(t.id)}>Generate Proposal</Button>
+                    <Button variant="default" size="sm" onClick={handleGenerateProposals} disabled={loading}>Generate Proposals</Button>
                   </div>
                 ))}
               </div>
@@ -147,24 +157,20 @@ export default function Content() {
 
         {!loading && tab === 'proposals' && (
           proposals.length === 0
-            ? <EmptyState icon="◐" title="No proposals" body="Go to Trends and generate a proposal from an active trend." />
+            ? <EmptyState icon="◐" title="No proposals" body="Go to Trends and generate proposals from active trends." action={<Button variant="primary" size="md" onClick={handleGenerateProposals}>Generate Proposals</Button>} />
             : (
               <div className={styles.list}>
                 {proposals.map(p => (
-                  <div key={p.id} className={styles.proposalCard}>
-                    <div className={styles.proposalTop}>
-                      <span className={styles.proposalTrend}>{p.trends?.name || 'Proposal'}</span>
-                      <Badge color={p.status === 'pending' ? 'var(--color-gold)' : 'var(--color-cso)'}>{p.status}</Badge>
-                    </div>
-                    {p.caption && <p className={styles.caption}>{p.caption}</p>}
-                    <div className={styles.proposalActions}>
-                      <Button variant="primary" size="sm" onClick={async () => {
-                        const title = p.trends?.name || 'Post';
-                        await createScheduleEntry({ title, caption: p.caption, proposal_id: p.id, status: 'draft', platforms: ['instagram', 'tiktok'] });
-                        setTab('calendar');
-                      }}>→ Schedule</Button>
-                    </div>
-                  </div>
+                  <ProposalCard
+                    key={p.id}
+                    proposal={p}
+                    onRefresh={() => loadTab('proposals')}
+                    onSchedule={async () => {
+                      const title = p.trend?.name || 'Post';
+                      await createScheduleEntry({ title, caption: p.caption, proposal_id: p.id, status: 'draft', platforms: ['instagram', 'tiktok'] });
+                      setTab('calendar');
+                    }}
+                  />
                 ))}
               </div>
             )
@@ -172,6 +178,10 @@ export default function Content() {
 
         {!loading && tab === 'calendar' && (
           <CalendarView schedule={schedule} onRefresh={() => loadTab('calendar')} />
+        )}
+
+        {tab === 'brand voice' && (
+          <BrandVoicePanel />
         )}
       </div>
 
@@ -181,14 +191,103 @@ export default function Content() {
   );
 }
 
-function CalendarView({ schedule, onRefresh }) {
-  const [newPost, setNewPost] = useState(null);
+// ── Proposal Card ─────────────────────────────────────────────────────────────
 
+function ProposalCard({ proposal: p, onRefresh, onSchedule }) {
+  const [expanded, setExpanded] = useState(false);
+  const [captions, setCaptions] = useState(p.caption_variants || []);
+  const [selectedCaption, setSelectedCaption] = useState(p.caption || '');
+  const [generating, setGenerating] = useState(false);
+  const [swapping, setSwapping] = useState({});
+
+  async function handleGenerateCaptions() {
+    setGenerating(true);
+    try {
+      const result = await generateProposalCaptions(p.id);
+      setCaptions(result.captions || []);
+      if (result.captions?.[0]) setSelectedCaption(result.captions[0]);
+    } finally { setGenerating(false); }
+  }
+
+  async function handleSwap(slotLabel) {
+    setSwapping(s => ({ ...s, [slotLabel]: true }));
+    try {
+      await swapProposalAsset(p.id, slotLabel);
+      onRefresh();
+    } finally { setSwapping(s => ({ ...s, [slotLabel]: false })); }
+  }
+
+  async function handleDismiss() {
+    await updateProposalStatus(p.id, 'dismissed');
+    onRefresh();
+  }
+
+  const slots = p.matched_assets || [];
+
+  return (
+    <div className={styles.proposalCard}>
+      <div className={styles.proposalTop}>
+        <span className={styles.proposalTrend}>{p.trend?.name || 'Proposal'}</span>
+        <Badge color={p.status === 'pending' ? 'var(--color-gold)' : 'var(--color-cso)'}>{p.status}</Badge>
+      </div>
+
+      {/* Asset slots */}
+      {slots.length > 0 && (
+        <div className={styles.slotRow}>
+          {slots.map(slot => (
+            <div key={slot.slot_label} className={styles.slot}>
+              {slot.asset?.public_url
+                ? <img src={slot.asset.public_url} alt={slot.slot_label} className={styles.slotImg} />
+                : <div className={styles.slotEmpty}>No asset</div>
+              }
+              <div className={styles.slotMeta}>
+                <span className={styles.slotLabel}>{slot.slot_label}</span>
+                <button className={styles.swapBtn} onClick={() => handleSwap(slot.slot_label)} disabled={swapping[slot.slot_label]}>
+                  {swapping[slot.slot_label] ? '…' : '⇄'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Caption */}
+      {selectedCaption && <p className={styles.caption}>{selectedCaption}</p>}
+
+      {/* Caption variants */}
+      {expanded && captions.length > 1 && (
+        <div className={styles.captionVariants}>
+          {captions.map((c, i) => (
+            <button
+              key={i}
+              className={`${styles.captionOption} ${c === selectedCaption ? styles.captionSelected : ''}`}
+              onClick={() => setSelectedCaption(c)}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className={styles.proposalActions}>
+        <Button variant="primary" size="sm" onClick={onSchedule}>→ Schedule</Button>
+        <Button variant="default" size="sm" onClick={() => { setExpanded(e => !e); if (!expanded && !captions.length) handleGenerateCaptions(); }}>
+          {expanded ? '▲ Collapse' : '▼ Captions'}
+        </Button>
+        {expanded && <Button variant="default" size="sm" onClick={handleGenerateCaptions} disabled={generating}>{generating ? '⟳' : '↺ Regenerate'}</Button>}
+        <Button variant="danger" size="sm" onClick={handleDismiss}>✕</Button>
+      </div>
+    </div>
+  );
+}
+
+// ── Calendar View ──────────────────────────────────────────────────────────────
+
+function CalendarView({ schedule, onRefresh }) {
   async function handleDelete(id) {
     await deleteScheduleEntry(id);
     onRefresh();
   }
-
   const byStatus = (s) => schedule.filter(p => p.status === s);
 
   return (
@@ -217,6 +316,97 @@ function CalendarView({ schedule, onRefresh }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── Brand Voice Panel ─────────────────────────────────────────────────────────
+
+function BrandVoicePanel() {
+  const [voice, setVoice] = useState(null);
+  const [desc, setDesc] = useState('');
+  const [samples, setSamples] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [learning, setLearning] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    getBrandVoice().then(v => {
+      setVoice(v);
+      setDesc(v?.voice_description || '');
+      setSamples((v?.sample_captions || []).join('\n'));
+    }).catch(() => {});
+  }, []);
+
+  async function handleSave() {
+    setSaving(true);
+    setSaved(false);
+    try {
+      await updateBrandVoice(desc, samples.split('\n').map(s => s.trim()).filter(Boolean));
+      setSaved(true);
+    } finally { setSaving(false); }
+  }
+
+  async function handleLearn() {
+    setLearning(true);
+    try {
+      const result = await learnBrandVoice();
+      setVoice(v => ({ ...v, learned_style: result.learned_style }));
+    } finally { setLearning(false); }
+  }
+
+  return (
+    <div className={styles.brandVoice}>
+      <div className={styles.brandVoiceForm}>
+        <div className={styles.bvField}>
+          <label className={styles.bvLabel}>Brand Voice Description</label>
+          <textarea
+            className={styles.bvTextarea}
+            value={desc}
+            onChange={e => setDesc(e.target.value)}
+            placeholder="Describe AC Styling's brand voice — tone, personality, who you're speaking to…"
+            rows={4}
+          />
+        </div>
+        <div className={styles.bvField}>
+          <label className={styles.bvLabel}>Sample Captions (one per line)</label>
+          <textarea
+            className={styles.bvTextarea}
+            value={samples}
+            onChange={e => setSamples(e.target.value)}
+            placeholder="Paste example captions from past posts, one per line…"
+            rows={5}
+          />
+        </div>
+        <div className={styles.bvActions}>
+          <Button variant="primary" size="md" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save Voice'}
+          </Button>
+          <Button variant="default" size="md" onClick={handleLearn} disabled={learning}>
+            {learning ? '⟳ Learning…' : '✦ Learn from Vault'}
+          </Button>
+        </div>
+      </div>
+
+      {voice?.learned_style && (
+        <div className={styles.learnedStyle}>
+          <p className={styles.bvLabel}>Learned Style</p>
+          <div className={styles.learnedGrid}>
+            {voice.learned_style.tone?.length > 0 && (
+              <div><span className={styles.learnedKey}>Tone</span><span>{voice.learned_style.tone.join(', ')}</span></div>
+            )}
+            {voice.learned_style.emoji_usage && (
+              <div><span className={styles.learnedKey}>Emoji usage</span><span>{voice.learned_style.emoji_usage}</span></div>
+            )}
+            {voice.learned_style.sentence_length && (
+              <div><span className={styles.learnedKey}>Sentence length</span><span>{voice.learned_style.sentence_length}</span></div>
+            )}
+            {voice.learned_style.personality_traits?.length > 0 && (
+              <div><span className={styles.learnedKey}>Personality</span><span>{voice.learned_style.personality_traits.join(', ')}</span></div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

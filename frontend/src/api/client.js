@@ -113,6 +113,86 @@ export async function updateLead(id, data) {
   return fetch(`${BASE}/api/leads/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(json);
 }
 
+// ── Content — new endpoints ────────────────────────────────────────────────
+
+export async function swapProposalAsset(proposalId, slotLabel) {
+  return fetch(`${BASE}/api/content/proposals/${proposalId}/swap`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slot_label: slotLabel }) }).then(json);
+}
+
+export async function generateProposalCaptions(proposalId) {
+  return fetch(`${BASE}/api/content/proposals/${proposalId}/captions`, { method: 'POST' }).then(json);
+}
+
+export async function getStoryboard(proposalId) {
+  return fetch(`${BASE}/api/content/proposals/${proposalId}/storyboard`).then(json);
+}
+
+export async function updateProposalStatus(id, status) {
+  return fetch(`${BASE}/api/content/proposals/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) }).then(json);
+}
+
+export async function getBrandVoice() {
+  return fetch(`${BASE}/api/content/voice`).then(json);
+}
+
+export async function updateBrandVoice(voice_description, sample_captions) {
+  return fetch(`${BASE}/api/content/voice`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ voice_description, sample_captions }) }).then(json);
+}
+
+export async function learnBrandVoice() {
+  return fetch(`${BASE}/api/content/voice/learn`, { method: 'POST' }).then(json);
+}
+
+export async function updateAsset(id, data) {
+  return fetch(`${BASE}/api/content/assets/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(json);
+}
+
+// ── Leads — new endpoints ──────────────────────────────────────────────────
+
+export async function getLeadEvents(leadId) {
+  return fetch(`${BASE}/api/leads/${leadId}/events`).then(json);
+}
+
+export async function getLeadRuns(leadId) {
+  return fetch(`${BASE}/api/leads/${leadId}/runs`).then(json);
+}
+
+export async function pauseLead(id) {
+  return fetch(`${BASE}/api/leads/${id}/pause`, { method: 'PUT' }).then(json);
+}
+
+export async function resumeLead(id) {
+  return fetch(`${BASE}/api/leads/${id}/resume`, { method: 'PUT' }).then(json);
+}
+
+export async function editLeadDraft(id, data) {
+  return fetch(`${BASE}/api/leads/${id}/draft`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(json);
+}
+
+export async function getDiscoverySources() {
+  return fetch(`${BASE}/api/leads/sources/list`).then(json);
+}
+
+export async function createDiscoverySource(data) {
+  return fetch(`${BASE}/api/leads/sources`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(json);
+}
+
+export async function updateDiscoverySource(id, data) {
+  return fetch(`${BASE}/api/leads/sources/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }).then(json);
+}
+
+export async function deleteDiscoverySource(id) {
+  return fetch(`${BASE}/api/leads/sources/${id}`, { method: 'DELETE' }).then(json);
+}
+
+export async function runSource(id) {
+  return fetch(`${BASE}/api/leads/sources/${id}/run`, { method: 'POST' }).then(json);
+}
+
+export async function previewSourceQuery(source_type, query, trigger_type) {
+  return fetch(`${BASE}/api/leads/sources/preview`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ source_type, query, trigger_type }) }).then(json);
+}
+
 // ── Operations ────────────────────────────────────────────────────────────
 
 export async function getLabMetrics() {
