@@ -182,11 +182,15 @@ ALTER TABLE public.discovery_sources ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow all on discovery_sources" ON public.discovery_sources;
 CREATE POLICY "Allow all on discovery_sources" ON public.discovery_sources FOR ALL USING (true) WITH CHECK (true);
 
--- Unique constraint on name so ON CONFLICT (name) works for seed inserts
+-- Deduplicate discovery_sources (keep oldest row per name), then add unique constraint
+DELETE FROM public.discovery_sources
+WHERE id NOT IN (
+  SELECT MIN(id::text)::uuid FROM public.discovery_sources GROUP BY name
+);
+
 DO $$ BEGIN
   IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conname = 'discovery_sources_name_unique'
+    SELECT 1 FROM pg_constraint WHERE conname = 'discovery_sources_name_unique'
   ) THEN
     ALTER TABLE public.discovery_sources ADD CONSTRAINT discovery_sources_name_unique UNIQUE (name);
   END IF;
