@@ -182,6 +182,9 @@ ALTER TABLE public.discovery_sources ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow all on discovery_sources" ON public.discovery_sources;
 CREATE POLICY "Allow all on discovery_sources" ON public.discovery_sources FOR ALL USING (true) WITH CHECK (true);
 
+-- Unique constraint on name so ON CONFLICT (name) works for seed inserts
+ALTER TABLE public.discovery_sources ADD CONSTRAINT IF NOT EXISTS discovery_sources_name_unique UNIQUE (name);
+
 -- Seed Miami discovery sources (safe — skip if name already exists)
 INSERT INTO public.discovery_sources (name, source_type, category, config) VALUES
 
@@ -236,7 +239,7 @@ INSERT INTO public.discovery_sources (name, source_type, category, config) VALUE
     "relocates headquarters Miami executive woman founder 2026"
   ]
 }')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- SECTION 9: Leads table — add all missing columns from full schema
@@ -260,12 +263,17 @@ ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS followup_draft_body    text;
 ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS followup_sent_at       timestamptz;
 ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS trigger_event_date     date;
 ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS trigger_raw_data       jsonb;
-ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS first_name            text;
-ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS email                 text;
-ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS title                 text;
-ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS company               text;
-ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS website_url           text;
-ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS email_body_html       text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS trigger_source_url     text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS first_name             text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS email                  text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS title                  text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS company                text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS website_url            text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS email_body_html        text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS style_observations     text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS rejection_reason       text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS rejected_by            text;
+ALTER TABLE public.leads ADD COLUMN IF NOT EXISTS sent_from_email        text;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- SECTION 10: Storage buckets (run manually if not yet created)

@@ -76,6 +76,25 @@
   border-top: 1px solid var(--color-border); background: var(--color-bg-elevated);
 }
 
+/* Scout result banner */
+.scoutSuccess {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: color-mix(in srgb, var(--color-cso) 15%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-cso) 30%, transparent);
+  font-size: 12px; color: var(--color-cso); flex-shrink: 0;
+}
+.scoutError {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: color-mix(in srgb, var(--color-error) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-error) 25%, transparent);
+  font-size: 12px; color: var(--color-error); flex-shrink: 0;
+}
+.dismissBanner {
+  background: none; border: none; cursor: pointer; font-size: 10px;
+  color: inherit; opacity: 0.7; padding: 0 4px;
+}
+.dismissBanner:hover { opacity: 1; }
+
 /* Top-level tabs (pipeline / sources) */
 .topTabs {
   display: flex; border-bottom: 1px solid var(--color-border);

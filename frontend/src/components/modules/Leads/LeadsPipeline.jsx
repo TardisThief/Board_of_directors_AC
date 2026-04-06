@@ -27,6 +27,7 @@ export default function LeadsPipeline() {
   const [leads, setLeads] = useState([]);
   const [selected, setSelected] = useState(null);
   const [scouting, setScouting] = useState(false);
+  const [scoutResult, setScoutResult] = useState(null); // { discovered: N } | { error: '...' }
   const [processing, setProcessing] = useState({});
   const [filterStatus, setFilterStatus] = useState(null);
 
@@ -39,8 +40,16 @@ export default function LeadsPipeline() {
 
   async function scout() {
     setScouting(true);
-    try { await runLeadScout(); await loadLeads(); }
-    finally { setScouting(false); }
+    setScoutResult(null);
+    try {
+      const result = await runLeadScout();
+      setScoutResult({ discovered: result.discovered ?? 0 });
+      await loadLeads();
+    } catch (err) {
+      setScoutResult({ error: err.message });
+    } finally {
+      setScouting(false);
+    }
   }
 
   async function runPipeline(id) {
@@ -101,6 +110,17 @@ export default function LeadsPipeline() {
 
       {tab === 'pipeline' && (
         <>
+          {scoutResult && (
+            <div className={scoutResult.error ? styles.scoutError : styles.scoutSuccess}>
+              {scoutResult.error
+                ? `Scout error: ${scoutResult.error}`
+                : scoutResult.discovered === 0
+                  ? 'Scout ran — no new leads found this time.'
+                  : `Scout found ${scoutResult.discovered} new lead${scoutResult.discovered !== 1 ? 's' : ''}!`
+              }
+              <button className={styles.dismissBanner} onClick={() => setScoutResult(null)}>✕</button>
+            </div>
+          )}
           {/* Stage filter bar */}
           <div className={styles.stageBar}>
             <button className={`${styles.stageBtn} ${!filterStatus ? styles.activeStage : ''}`} onClick={() => setFilterStatus(null)}>
