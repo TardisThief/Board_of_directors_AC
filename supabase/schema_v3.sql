@@ -36,6 +36,8 @@ CREATE INDEX IF NOT EXISTS idx_assets_garments
 -- SECTION 3: match_assets RPC function
 -- Ranked cosine similarity search with optional vibe filter
 -- ─────────────────────────────────────────────────────────────────────────────
+DROP FUNCTION IF EXISTS public.match_assets(extensions.vector, float, int, text[]);
+DROP FUNCTION IF EXISTS public.match_assets(vector, float, int, text[]);
 CREATE OR REPLACE FUNCTION public.match_assets(
   query_embedding extensions.vector(1024),
   match_threshold float DEFAULT 0.3,
