@@ -183,7 +183,14 @@ DROP POLICY IF EXISTS "Allow all on discovery_sources" ON public.discovery_sourc
 CREATE POLICY "Allow all on discovery_sources" ON public.discovery_sources FOR ALL USING (true) WITH CHECK (true);
 
 -- Unique constraint on name so ON CONFLICT (name) works for seed inserts
-ALTER TABLE public.discovery_sources ADD CONSTRAINT IF NOT EXISTS discovery_sources_name_unique UNIQUE (name);
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'discovery_sources_name_unique'
+  ) THEN
+    ALTER TABLE public.discovery_sources ADD CONSTRAINT discovery_sources_name_unique UNIQUE (name);
+  END IF;
+END $$;
 
 -- Seed Miami discovery sources (safe — skip if name already exists)
 INSERT INTO public.discovery_sources (name, source_type, category, config) VALUES
